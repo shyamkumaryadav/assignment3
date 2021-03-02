@@ -32,12 +32,6 @@ class MyFilterSet(FilterSet):
 
 class StudentViewSet(ModelViewSet):
     serializer_class = StudentSerializer
+    queryset = Student.objects.all()
     lookup_field = 'name'
     filterset_class = MyFilterSet
-
-    def get_queryset(self):
-        try:
-            return Student.objects.all()
-        except:
-            return None
-    

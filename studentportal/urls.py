@@ -29,13 +29,11 @@ admin.AdminSite.site_url = '/'
 admin.AdminSite.enable_nav_sidebar = False
 admin.AdminSite.empty_value_display = '<i>undefined</i>'
 
-@admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'rollNo', 'physics', 'chemistry', 'maths', 'total', 'percentage')
+
 
 
 router = DefaultRouter()
-router.register('student', StudentViewSet)
+router.register('students', StudentViewSet)
 
 
 urlpatterns = [

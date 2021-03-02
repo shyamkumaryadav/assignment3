@@ -73,9 +73,39 @@
                   <span class="helper-text" ref="mathsError" :data-error="maths.error" v-show="maths.error"></span>
                 </div>
               </div>
-            <button type="button" @click="formSubmit" class="waves-effect green waves-teal btn left" :class="{disabled: result?.name?.length > 0}">Calculate</button>
+            <button type="button" @click="formSubmit" class="waves-effect green waves-teal btn left" :class="{disabled: postbtn}" :class="{disabled: result?.name?.length > 0}">
+              Calculate
+              <div class="preloader-wrapper active" style="width: 18px;height: 18px;" v-if="postbtn">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div>
+                  <div class="gap-patch">
+                    <div class="circle"></div>
+                  </div>
+                  <div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+              </div>
+            </button>
             <a class="btn-flat" href="{% url 'index' %}" v-show="window.location.search != '' ">New ?</a>
-            <button type="button" @click="formUpdate" class="waves-effect green waves-teal btn right"  v-if="result.id > 0">Update</button>
+            <button type="button" @click="formUpdate" class="waves-effect green waves-teal btn right" :class="{disabled: putbtn}"  v-if="result.id > 0">
+              Update
+              <div class="preloader-wrapper active" style="width: 18px;height: 18px;" v-if="putbtn">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div>
+                  <div class="gap-patch">
+                    <div class="circle"></div>
+                  </div>
+                  <div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+              </div>
+            </button>
         </form>
         
     </div>
@@ -83,6 +113,11 @@
 {% endblock main %}
 {% block javascript %}
 <script>
+  const headers = {
+    'Content-Type': 'application/json',
+    'xsrfCookieName': 'csrftoken',
+    'xsrfHeaderName': 'X-CSRFTOKEN',
+  }
     new Vue({
         el: '#appMain',
         delimiters: ['[[', ']]'],
@@ -94,19 +129,24 @@
                 chemistry: {error: [], value: null},
                 maths: {error: [], value: null},
                 result: {},
+                putbtn: false,
+                postbtn: false,
+                
             }
         },
         methods: {
             formSubmit(){
+                this.postbtn = true
                 this.name.error = []
                 this.rollNo.error = []
                 this.physics.error = []
                 this.chemistry.error = []
                 this.maths.error = []
-                axios.post("{% url 'student-list' %}", {name:this.name.value, rollNo:this.rollNo.value, physics:this.physics.value, chemistry:this.chemistry.value, maths:this.maths.value})
+                axios.post("{% url 'student-list' %}", {name:this.name.value, rollNo:this.rollNo.value, physics:this.physics.value, chemistry:this.chemistry.value, maths:this.maths.value}, headers)
                 .then(res => {
                     console.log(res)
                     this.result = res.data
+                    this.postbtn = false
                 })
                 .catch(error => {
                     const errors = error.response.data
@@ -116,19 +156,21 @@
                     this.physics.error = errors.physics
                     this.chemistry.error = errors.chemistry
                     this.maths.error = errors.maths
-                    
+                    this.postbtn = false                    
                 })
             },
             formUpdate(){
+                this.putbtn = true
                 this.name.error = []
                 this.rollNo.error = []
                 this.physics.error = []
                 this.chemistry.error = []
                 this.maths.error = []
-                axios.put(this.result.url, {name:this.name.value, rollNo:this.rollNo.value, physics:this.physics.value, chemistry:this.chemistry.value, maths:this.maths.value})
+                axios.put(this.result.url, {name:this.name.value, rollNo:this.rollNo.value, physics:this.physics.value, chemistry:this.chemistry.value, maths:this.maths.value}, headers)
                 .then(res => {
                     this.result = res.data
                     M.toast({html: "Update..."})
+                    this.putbtn = false
                 })
                 .catch(error => {
                     const errors = error.response.data
@@ -137,7 +179,7 @@
                     this.physics.error = errors.physics
                     this.chemistry.error = errors.chemistry
                     this.maths.error = errors.maths
-                    
+                    this.putbtn = false
                 })
             },
             loadData(){

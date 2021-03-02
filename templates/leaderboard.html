@@ -13,7 +13,7 @@
         <div class="col s12" v-if="allData.count > 0">
             <div class="row nav-wrapper">
                 <div class="input-field">
-                    <input placeholder="search by name"  type="search" @keyup.enter="NameBy" v-model="name">
+                    <input placeholder="search by name ( / focus)" ref="nameInput" type="search" @keyup.enter="NameBy" v-model="name">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons"  @click="name = '' ">close</i>
                   </div>
@@ -21,7 +21,7 @@
             <table class="responsive-table centered highlight">
                 <thead>
                   <tr>
-                      <th>Name</th>
+                      <th @click="$refs.nameInput.focus()">Name</th>
                       <th style="cursor: pointer;" @click="orederBy('rollNo')">Roll No. <i class="material-icons right" v-html="getLogo('rollNo')"></i></th>
                       <th style="cursor: pointer;" @click="orederBy('physics')">Physics <i class="material-icons right" v-html="getLogo('physics')"></i></th>
                       <th style="cursor: pointer;" @click="orederBy('chemistry')">Chemistry <i class="material-icons right" v-html="getLogo('chemistry')"></i></th>
@@ -53,6 +53,9 @@
         <div class="col s12" v-else>
             Not available <a @click="getData(main_url)" class="btn-flat waves-effect waves-light">Go Back</a> <a href="{% url 'index' %}" class="btn-flat waves-effect waves-light">Home</a>
         </div>
+        <div class="progress" v-if="load">
+            <div class="indeterminate"></div>
+        </div>
     </div>
 </div>
 {% endblock main %}
@@ -68,19 +71,28 @@
                 o_by: '',
                 url: '',
                 main_url: "{{request.scheme}}://{{request.META.HTTP_HOST}}{% url 'student-list' %}?",
-                name: ''
+                name: '',
+                load: false
             }
         },
         created(){
             this.getData("{{request.scheme}}://{{request.META.HTTP_HOST}}{% url 'student-list' %}?")
+            window.addEventListener('keyup', event => {
+                event.key === "/" ? this.$refs.nameInput.focus() : null
+            })
         },
         methods:{
             getData(url){
+                this.load = true
                 this.url = url
                 axios.get(url).then(res => {
                 this.allData = res.data
+                this.load = false
                 })
-                .catch(error => console.log(error))
+                .catch(error => {
+                    console.log(error)
+                    this.load = false
+                })
             },
             orederBy(name){
                 let params = new window.URL(this.url);
