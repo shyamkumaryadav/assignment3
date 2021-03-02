@@ -112,7 +112,7 @@
             },
             NameBy(){
                 let params = new window.URL(this.url);
-                params.search ? params.searchParams.set('name__contains', this.name) : params.searchParams.append('name__contains', this.name)
+                params.search ? params.searchParams.set('name__icontains', this.name) : params.searchParams.append('name__icontains', this.name)
                 this.getData(params.toString())
             }
         },
