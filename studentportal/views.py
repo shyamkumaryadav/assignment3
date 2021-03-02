@@ -31,7 +31,7 @@ class MyFilterSet(FilterSet):
     class Meta:
         model = Student
         fields = {
-            'name': ['contains'],
+            'name': ['icontains'],
             'rollNo': ['exact'],
         }
 
