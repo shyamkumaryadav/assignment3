@@ -1,7 +1,12 @@
 from rest_framework.serializers import HyperlinkedModelSerializer
+from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import FilterSet, OrderingFilter
 from .models import Student
+
+def Handler404(request, exception):
+    return render(request, template_name="404.html", context={exception: exception})
+
 
 class StudentSerializer(HyperlinkedModelSerializer):
     class Meta:
