@@ -35,7 +35,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 
 router = DefaultRouter()
-router.register('students', StudentViewSet)
+router.register('student', StudentViewSet)
 
 
 urlpatterns = [
