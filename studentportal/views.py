@@ -35,5 +35,9 @@ class StudentViewSet(ModelViewSet):
     lookup_field = 'name'
     filterset_class = MyFilterSet
 
-    
+    def get_queryset(self):
+        try:
+            return Student.objects.all()
+        except:
+            return None
     
