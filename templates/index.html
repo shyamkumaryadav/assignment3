@@ -1,0 +1,176 @@
+{% extends 'master.html' %}
+{% block main %}
+<div class="row" id="appMain">
+    <div class="col s12 m8 offset-m2">
+        <div class="section">
+            <h5 class="center">Enter your Marks</h5>
+            <div class="row"></div>
+            <p class="card" style="padding: 8px;" v-if="!(result.id > 0)">In case You absent please enter 0 on that field.<a class="btn-floating halfway-fab waves-effect waves-light white " onclick="event.target.parentNode.parentElement.hidden = true;"><i class="material-icons black-text" >close</i></a></p>
+        </div>
+        <div class="col s12" v-if="result.id > 0">
+            <table class="responsive-table centered">
+                <thead>
+                  <tr>
+                      <th>Name</th>
+                      <th>Roll No.</th>
+                      <th>Physics</th>
+                      <th>Chemistry</th>
+                      <th>Maths</th>
+                      <th>Total</th>
+                      <th>Percentage</th>
+                      <th>Edit</th>
+                  </tr>
+                </thead>
+        
+                <tbody>
+                  <tr>
+                    <td>[[ result?.name ]]</td>
+                    <td>[[ result?.rollNo ]]</td>
+                    <td>[[ result?.physics ]]</td>
+                    <td>[[ result?.chemistry ]]</td>
+                    <td>[[ result?.maths ]]</td>
+                    <td>[[ result?.total ]]</td>
+                    <td>[[ result?.percentage ]] %</td>
+                    <td><a href="#!" @click="loadData">load Data</a></td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+        <div class="divider"></div>
+        <div class="row"></div>
+        <form class="col s12" method="POST">
+            {% csrf_token %}
+            <div class="row">
+              <div class="input-field col s6">
+                <input placeholder="Enter Your Name" ref="name" type="text" class="validate" :class="{invalid: name?.error?.length > 0}" v-model="name.value">
+                <label for="name">Name</label>
+                <span class="helper-text" ref="nameError" :data-error="name.error" v-show="name.error"></span>
+              </div>
+              <div class="input-field col s6">
+                <input ref="rollNo" placeholder="Enter Your Roll Number" type="number" class="validate" :class="{invalid: rollNo?.error?.length > 0}" v-model="rollNo.value">
+                <label for="rollNo">Roll No.</label>
+                <span class="helper-text" ref="rollNoError" :data-error="rollNo.error" v-show="rollNo.error"></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input placeholder="Enter your physics marks" ref="physics" type="number" class="validate" :class="{invalid: physics?.error?.length > 0}" v-model="physics.value">
+                <label for="physics">Physics</label>
+                <span class="helper-text" ref="physicsError" :data-error="physics.error" v-show="physics.error"></span>
+              </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Enter your chemistry marks" ref="chemistry" type="number" class="validate" :class="{invalid: chemistry?.error?.length > 0}" v-model="chemistry.value">
+                  <label for="chemistry">chemistry</label>
+                  <span class="helper-text" ref="chemistryError" :data-error="chemistry.error" v-show="chemistry.error"></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Enter your maths marks" ref="maths" type="number" class="validate" :class="{invalid: maths?.error?.length > 0}" v-model="maths.value">
+                  <label for="maths">maths</label>
+                  <span class="helper-text" ref="mathsError" :data-error="maths.error" v-show="maths.error"></span>
+                </div>
+              </div>
+            <button type="button" @click="formSubmit" class="waves-effect green waves-teal btn left" :class="{disabled: result?.name?.length > 0}">Calculate</button>
+            <a class="btn-flat" href="{% url 'index' %}" v-show="window.location.search != '' ">New ?</a>
+            <button type="button" @click="formUpdate" class="waves-effect green waves-teal btn right"  v-if="result.id > 0">Update</button>
+        </form>
+        
+    </div>
+</div>
+{% endblock main %}
+{% block javascript %}
+<script>
+    new Vue({
+        el: '#appMain',
+        delimiters: ['[[', ']]'],
+        data(){
+            return {
+                name: {error: [], value: null},
+                rollNo: {error: [], value: null},
+                physics: {error: [], value: null},
+                chemistry: {error: [], value: null},
+                maths: {error: [], value: null},
+                result: {},
+            }
+        },
+        methods: {
+            formSubmit(){
+                this.name.error = []
+                this.rollNo.error = []
+                this.physics.error = []
+                this.chemistry.error = []
+                this.maths.error = []
+                axios.post("{% url 'student-list' %}", {name:this.name.value, rollNo:this.rollNo.value, physics:this.physics.value, chemistry:this.chemistry.value, maths:this.maths.value})
+                .then(res => {
+                    console.log(res)
+                    this.result = res.data
+                })
+                .catch(error => {
+                    const errors = error.response.data
+                    M.toast({html: 'Enter valid Info!'})
+                    this.name.error = errors.name
+                    this.rollNo.error = errors.rollNo
+                    this.physics.error = errors.physics
+                    this.chemistry.error = errors.chemistry
+                    this.maths.error = errors.maths
+                    
+                })
+            },
+            formUpdate(){
+                this.name.error = []
+                this.rollNo.error = []
+                this.physics.error = []
+                this.chemistry.error = []
+                this.maths.error = []
+                axios.put(this.result.url, {name:this.name.value, rollNo:this.rollNo.value, physics:this.physics.value, chemistry:this.chemistry.value, maths:this.maths.value})
+                .then(res => {
+                    this.result = res.data
+                    M.toast({html: "Update..."})
+                })
+                .catch(error => {
+                    const errors = error.response.data
+                    this.name.error = errors.name
+                    this.rollNo.error = errors.rollNo
+                    this.physics.error = errors.physics
+                    this.chemistry.error = errors.chemistry
+                    this.maths.error = errors.maths
+                    
+                })
+            },
+            loadData(){
+              this.name.value = this.result.name
+              this.rollNo.value = this.result.rollNo
+              this.physics.value = this.result.physics
+              this.chemistry.value = this.result.chemistry
+              this.maths.value = this.result.maths
+            }
+        },
+        watch:{
+            'name.value': function(newV, old){
+                this.name.error = []
+            },
+            'rollNo.value': function(newV, old){
+                this.rollNo.error = []
+            },
+            'physics.value': function(newV, old){
+                this.physics.error = []
+            },
+            'chemistry.value': function(newV, old){
+                this.chemistry.error = []
+            },
+            'maths.value': function(newV, old){
+                this.maths.error = []
+            },
+        },
+        created(){
+          const params = new window.URL(window.location).searchParams.get('rollNo');
+          if(params){
+            axios.get("{% url 'student-list' %}?rollNo="+params).then(res => this.result = res.data.results[0]).catch(error => console.log(error))
+          }else M.toast({html: "Yes, You hake the website by entring ?rollNo=anyrollnumber"})
+        }
+    })
+</script>
+{% endblock javascript %}

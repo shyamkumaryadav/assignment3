@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Student portal</title>
+    <meta name="description" content="A 3 page portal that captures marks of students in one page and displays the leaderboard in another page.">
+    <link rel="stylesheet" href="{% static 'materialize.min.css' %}">
+    {% block head %}
+    {% endblock head %}
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        
+        main {
+            flex: 1 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <noscript>
+      <strong>We're sorry but page doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <nav>
+      <div class="nav-wrapper darken-4 blue">
+        <a href="{% url 'index' %}" class="brand-logo">Student portal</a>
+        <ul id="nav-mobile" class="right">
+            <li><a href="{% url 'leaderboard' %}" class="tooltipped" data-position="bottom" data-tooltip="see Leader board">📄</a></li>
+          </ul>
+      </div>
+    </nav>
+    <main >
+      <div class="container">
+        {% block main %}
+        {% endblock main %}
+      </div>
+    </main>
+    <footer class="page-footer darken-4 blue">
+        <div class="container">
+          <div class="row">
+            <div class="col l6 s12">
+              <h5 class="white-text">Shyamkumar Yadav</h5>
+              <p class="grey-text text-lighten-4">कष्ट में किये गए कर्मों से भाग्य का निर्माण होता है | -- गीता</p>
+            </div>
+            <div class="col l4 offset-l2 s12">
+                <h5 class="white-text">Contact Me</h5>
+                <ul>
+                  <li><a class="grey-text text-lighten-3" target="_blank" href="https://www.github.com/shyamkumaryadav/">Github</a></li>
+                  <li><a class="grey-text text-lighten-3" target="_blank" href="https://www.linkedin.com/in/shyamkumaryadav/">Linkedin</a></li>
+                  <li><a class="grey-text text-lighten-3" target="_blank" href="https://www.instagram.com/ishyamkumaryadav">Instagram</a></li>
+                  <li><a class="grey-text text-lighten-3" target="_blank" href="https://twitter.com/shyamkumaryada">Twitter</a></li>
+                  <li><a class="grey-text text-lighten-3" target="_blank" href="https://www.facebook.com/ishyamkumaryadav">Facebook</a></li>
+                </ul>
+            </div>
+          </div>
+        </div>
+        <div class="footer-copyright">
+          <div class="container">
+            © 2021 Copyright by Shyamkumar yadav
+            <a class="grey-text text-lighten-4 right tooltipped" href="{% url 'leaderboard' %}" data-position="top" data-tooltip="see Leader board">Leader board</a>
+          </div>
+        </div>
+      </footer>
+    </body>
+<script src="{% static 'materialize.min.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        M.AutoInit();
+    });
+</script>
+<script src="{% static 'vue.min.js' %}"></script>
+<script src="{% static 'axios.min.js' %}"></script>
+{% block javascript %}
+{% endblock javascript %}
+</html>

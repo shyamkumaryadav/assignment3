@@ -1,0 +1,109 @@
+{% extends 'master.html' %}
+{% load static %}
+
+
+{% block main %}
+<div class="row" id="appMain">
+    <div class="col s12 m8 offset-m2">
+        <div class="section">
+            <h5 class="center">Welcome</h5>
+            <p></p>
+            <div class="row"></div>
+        </div>
+        <div class="col s12" v-if="allData.count > 0">
+            <div class="row nav-wrapper">
+                <div class="input-field">
+                    <input placeholder="search by name"  type="search" @keyup.enter="NameBy" v-model="name">
+                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                    <i class="material-icons"  @click="name = '' ">close</i>
+                  </div>
+            </div>
+            <table class="responsive-table centered highlight">
+                <thead>
+                  <tr>
+                      <th>Name</th>
+                      <th style="cursor: pointer;" @click="orederBy('rollNo')">Roll No. <i class="material-icons right" v-html="getLogo('rollNo')"></i></th>
+                      <th style="cursor: pointer;" @click="orederBy('physics')">Physics <i class="material-icons right" v-html="getLogo('physics')"></i></th>
+                      <th style="cursor: pointer;" @click="orederBy('chemistry')">Chemistry <i class="material-icons right" v-html="getLogo('chemistry')"></i></th>
+                      <th style="cursor: pointer;" @click="orederBy('maths')">Maths <i class="material-icons right" v-html="getLogo('maths')"></i></th>
+                      <th style="cursor: pointer;" @click="orederBy('total')">Total <i class="material-icons right" v-html="getLogo('total')"></i></th>
+                      <th style="cursor: pointer;" @click="orederBy('percentage')">Percentage <i class="material-icons right" v-html="getLogo('percentage')"></i></th>
+                      <th>Edit</th>
+                  </tr>
+                </thead>
+        
+                <tbody>
+                  <tr v-for="student in allData.results">
+                    <td>[[ student?.name]]</td>
+                    <td>[[ student?.rollNo]]</td>
+                    <td>[[ student?.physics]]</td>
+                    <td>[[ student?.chemistry]]</td>
+                    <td>[[ student?.maths]]</td>
+                    <td>[[ student?.total]]</td>
+                    <td>[[ student?.percentage]] %</td>
+                    <td><a :href="'{% url 'index' %}?rollNo='+[[ student?.rollNo]]">Edit</a></td>
+                  </tr>
+                </tbody>
+              </table>
+              <ul class="pagination">
+                <li><button class="waves-effect waves-teal btn-flat btn-small"  :class="{ disabled: !allData.previous}" @click="getData(allData.previous)"><i class="material-icons">chevron_left</i></button></li>
+                <li><button class="waves-effect waves-teal btn-flat btn-small" :class="{ disabled: !allData.next}" @click="getData(allData.next)"><i class="material-icons">chevron_right</i></button></li>
+              </ul>
+        </div>
+        <div class="col s12" v-else>
+            Not Avalabel student <a @click="getData(main_url)" class="btn-flat waves-effect waves-light">Go Back</a>
+        </div>
+    </div>
+</div>
+{% endblock main %}
+{% block javascript %}
+<script>
+    new Vue({
+        el: '#appMain',
+        delimiters: ['[[', ']]'],
+        data(){
+            return {
+                allData: [],
+                o: false,
+                o_by: '',
+                url: '',
+                main_url: "{{request.scheme}}://{{request.META.HTTP_HOST}}{% url 'student-list' %}?",
+                name: ''
+            }
+        },
+        created(){
+            this.getData("{{request.scheme}}://{{request.META.HTTP_HOST}}{% url 'student-list' %}?")
+        },
+        methods:{
+            getData(url){
+                this.url = url
+                axios.get(url).then(res => {
+                this.allData = res.data
+                })
+                .catch(error => console.log(error))
+            },
+            orederBy(name){
+                let params = new window.URL(this.url);
+                if(this.o){
+                    name = '-' + name
+                    this.o = false
+                }else{
+                    this.o = true
+                }
+                params.search ? params.searchParams.set('o', name) : params.searchParams.append('o', name)
+                this.getData(params.toString())
+            },
+            getLogo(name){
+                const getO = new window.URL(this.url).searchParams?.get('o')
+                
+                return getO?.slice(1) === name ? 'keyboard_arrow_down' : getO === name ? 'keyboard_arrow_up' : ''
+            },
+            NameBy(){
+                let params = new window.URL(this.url);
+                params.search ? params.searchParams.set('name__contains', this.name) : params.searchParams.append('name__contains', this.name)
+                this.getData(params.toString())
+            }
+        },
+    })
+</script>
+{% endblock javascript %}
