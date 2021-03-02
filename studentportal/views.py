@@ -13,7 +13,7 @@ class StudentSerializer(HyperlinkedModelSerializer):
         model = Student
         fields = ['id', 'url', 'name', 'rollNo', 'physics', 'chemistry', 'maths', 'total', 'percentage']
         extra_kwargs = {
-            'url': {'lookup_field': 'name'},
+            'url': {'lookup_field': 'rollNo'},
         }
         
 class MyFilterSet(FilterSet):
@@ -38,5 +38,5 @@ class MyFilterSet(FilterSet):
 class StudentViewSet(ModelViewSet):
     serializer_class = StudentSerializer
     queryset = Student.objects.all()
-    lookup_field = 'name'
+    lookup_field = 'rollNo'
     filterset_class = MyFilterSet
