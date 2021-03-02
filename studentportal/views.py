@@ -32,7 +32,8 @@ class MyFilterSet(FilterSet):
 
 class StudentViewSet(ModelViewSet):
     serializer_class = StudentSerializer
-    queryset = Student.objects.all()
     lookup_field = 'name'
     filterset_class = MyFilterSet
+
+    
     
