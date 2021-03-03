@@ -46,6 +46,7 @@
                 </tbody>
               </table>
               <ul class="pagination">
+                  
                 <li><button class="waves-effect waves-teal btn-flat btn-small"  :class="{ disabled: !allData.previous}" @click="getData(allData.previous)"><i class="material-icons">chevron_left</i></button></li>
                 <li><button class="waves-effect waves-teal btn-flat btn-small" :class="{ disabled: !allData.next}" @click="getData(allData.next)"><i class="material-icons">chevron_right</i></button></li>
               </ul>
